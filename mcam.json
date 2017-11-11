@@ -1,0 +1,11 @@
+{
+    "test": {
+        "suites": {
+            "all": "fx.html.test",
+            "unittest": "fx.html.test.unittest"
+        },
+        "root": "test"
+    },
+    "parent_package": "fx",
+    "short_name": "html"
+}
