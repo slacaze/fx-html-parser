@@ -2,6 +2,9 @@ classdef(Abstract) WithEngine < handle
     
     properties( GetAccess = protected, SetAccess = immutable )
         Engine fx.html.Engine
+    end
+    
+    properties( GetAccess = public, SetAccess = immutable, Hidden )
         Reference char
     end
     
