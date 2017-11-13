@@ -1,23 +1,11 @@
-classdef tNodes < matlab.unittest.TestCase
-    
-    properties( GetAccess = private, SetAccess = private )
-        Engine(1,1) fx.html.Engine
-    end
-    
-    methods( TestMethodSetup )
-        
-        function instanciateEngine( this )
-            this.Engine = fx.html.Engine();
-            pause( 1 )
-        end
-        
-    end
+classdef tNodes < fx.html.test.WithEngine
     
     methods( Test )
         
         function testGetDocumentNode( this )
             document = this.Engine.document();
             this.verifyInstanceOf( document, 'fx.html.DocumentNode' );
+            this.verifyEqual( document.Name, '#document' );
             this.verifyEqual( document.Type, fx.html.NodeType.DocumentNode );
         end
         
@@ -32,6 +20,20 @@ classdef tNodes < matlab.unittest.TestCase
             reference = document.Reference;
             clear document;
             this.verifyError( @() this.Engine.nodeType( reference ), 'FxHtml:UndefinedReference' );
+        end
+        
+        function testDocumentHasNoParent( this )
+            document = this.Engine.document();
+            this.verifyEmpty( document.parentNode );
+        end
+        
+        function testBasicTree( this )
+            document = this.Engine.document();
+            children = document.childNodes().childNodes();
+            this.verifyNumElements( children, 2 );
+            this.verifyEqual( children(1).Name, 'HEAD' );
+            this.verifyEqual( children(2).Name, 'BODY' );
+            this.verifyEqual( children(1).parentNode().Name, 'HTML' );
         end
         
     end
