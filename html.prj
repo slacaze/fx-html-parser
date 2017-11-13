@@ -1,6 +1,6 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
   <configuration file="C:\Users\Sylvain\MATLAB Drive\HtmlParser\html.prj" location="C:\Users\Sylvain\MATLAB Drive\HtmlParser" name="html" target="target.toolbox" target-name="Package Toolbox">
-    <param.appname>My AddOn Name</param.appname>
+    <param.appname>Fx HTML Parser</param.appname>
     <param.authnamewatermark />
     <param.email />
     <param.company />
@@ -8,7 +8,7 @@
     <param.description />
     <param.screenshot />
     <param.version>1.0.0</param.version>
-    <param.output>${PROJECT_ROOT}\My AddOn Name.mltbx</param.output>
+    <param.output>${PROJECT_ROOT}\Fx HTML Parser.mltbx</param.output>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -49,12 +49,14 @@
     <fileset.rootdir>
       <file>${PROJECT_ROOT}\code</file>
     </fileset.rootdir>
-    <fileset.rootfiles />
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}\code\html</file>
+    </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\Sylvain\MATLAB Drive\HtmlParser" name="My AddOn Name.mltbx" optional="false">C:\Users\Sylvain\MATLAB Drive\HtmlParser\My AddOn Name.mltbx</file>
+      <file location="C:\Users\Sylvain\MATLAB Drive\HtmlParser" name="Fx HTML Parser.mltbx" optional="false">C:\Users\Sylvain\MATLAB Drive\HtmlParser\Fx HTML Parser.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
