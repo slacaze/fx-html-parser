@@ -2,8 +2,6 @@ classdef Engine < handle
     
     properties( GetAccess = public, SetAccess = public, AbortSet, Dependent )
         HTML (1,:) char
-        Head (1,:) char
-        Body (1,:) char
         Visible (1,1) logical
     end
     
@@ -25,22 +23,6 @@ classdef Engine < handle
             this.innerHTML( 'document.documentElement', value );
         end
         
-        function value = get.Head( this )
-            value = this.outerHTML( 'document.head' );
-        end
-        
-        function set.Head( this, value )
-            this.innerHTML( 'document.head', value );
-        end
-        
-        function value = get.Body( this )
-            value = this.outerHTML( 'document.body' );
-        end
-        
-        function set.Body( this, value )
-            this.innerHTML( 'document.body', value );
-        end
-        
         function value = get.Visible( this )
             value = this.Browser.isVisible();
         end
@@ -58,9 +40,11 @@ classdef Engine < handle
     
     methods( Access = public )
         
-        function this = Engine()
-            this.Browser = matlab.internal.webwindow( ...
-                fullfile( htmlroot, 'templates', 'empty.html' ) );
+        function this = Engine( url )
+            if nargin < 1
+                url = fullfile( htmlroot, 'templates', 'empty.html' );
+            end
+            this.Browser = matlab.internal.webwindow( url );
         end
         
         function delete( this )
@@ -82,6 +66,16 @@ classdef Engine < handle
         
         function name = nodeName( this, reference )
             name = this.js( '%s.nodeName', reference );
+        end
+        
+        function value = nodeValue( this, reference, value )
+            if nargin < 3
+                % Get
+                value = this.js( '%s.nodeValue', reference );
+            else
+                % Set
+                value = this.js( '%s.nodeValue = %s', reference, value );
+            end
         end
         
         function html = innerHTML( this, reference, value )
@@ -118,9 +112,35 @@ classdef Engine < handle
             this.releaseJavaScriptReference( 'nodeList' );
         end
         
+        function decision = isSameNode( this, firstReference, SecondReference )
+            decision = this.js( '%s.isSameNode( %s )', ...
+                firstReference, SecondReference );
+        end
+        
+        function element = getElementById( this, reference, id )
+            this.js( 'element = %s.getElementById( "%s" )', ...
+                reference, id );
+            element = this.createNodeReference( 'element' );
+            this.releaseJavaScriptReference( 'element' );
+        end
+        
+        function element = getElementsByName( this, reference, name )
+            this.js( 'elementList = %s.getElementsByName( "%s" )', ...
+                reference, name );
+            element = this.createNodeReferences( 'elementList' );
+            this.releaseJavaScriptReference( 'elementList' );
+        end
+        
         function elements = getElementsByTagName( this, reference, tagName )
             this.js( 'elementList = %s.getElementsByTagName( "%s" )', ...
                 reference, tagName );
+            elements = this.createNodeReferences( 'elementList' );
+            this.releaseJavaScriptReference( 'elementList' );
+        end
+        
+        function elements = getElementsByClassName( this, reference, className )
+            this.js( 'elementList = %s.getElementsByClassName( "%s" )', ...
+                reference, className );
             elements = this.createNodeReferences( 'elementList' );
             this.releaseJavaScriptReference( 'elementList' );
         end
@@ -180,9 +200,16 @@ classdef Engine < handle
                 if ~isnan( outputNumeric )
                     output = outputNumeric;
                 else
-                    % Not number, remove quotes
-                    if output(1) == '"' && output(end) == '"'
-                        output = output(2:end-1);
+                    % Try for boolean
+                    if strcmp( output, 'true' )
+                        output = true;
+                    elseif strcmp( output, 'false' )
+                        output = false;
+                    else
+                        % Not boolean, remove quotes
+                        if output(1) == '"' && output(end) == '"'
+                            output = fx.html.util.unescapeJavaScriptString( output(2:end-1) );
+                        end
                     end
                 end
                 varargout{1} = output;
@@ -211,8 +238,12 @@ classdef Engine < handle
                 switch this.nodeType( permanentReference )
                     case fx.html.NodeType.ElementNode
                         node = fx.html.ElementNode( this, permanentReference );
+                    case fx.html.NodeType.TextNode
+                        node = fx.html.TextNode( this, permanentReference );
                     case fx.html.NodeType.DocumentNode
                         node = fx.html.DocumentNode( this, permanentReference );
+                    case fx.html.NodeType.DocumentTypeNode
+                        node = fx.html.DocumentTypeNode( this, permanentReference );
                     otherwise
                         error( ...
                             'FxHtml:NotImplemented', ...

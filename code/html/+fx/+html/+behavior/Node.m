@@ -7,6 +7,10 @@ classdef(Abstract) Node < ...
         Name (1,:) char
     end
     
+    properties( GetAccess = public, SetAccess = public, Dependent )
+        Value (1,:) char
+    end
+    
     methods
         
         function value = get.Type( this )
@@ -15,6 +19,14 @@ classdef(Abstract) Node < ...
         
         function value = get.Name( this )
             value = this.Engine.nodeName( this.Reference );
+        end
+        
+        function value = get.Value( this )
+            value = this.Engine.nodeValue( this.Reference );
+        end
+        
+        function set.Value( this, value )
+            this.Engine.nodeValue( this.Reference, value );
         end
         
     end
@@ -27,7 +39,7 @@ classdef(Abstract) Node < ...
         
     end
     
-    methods( Access = public )
+    methods( Access = public, Sealed )
         
         function node = parentNode( this )
             node = this.Engine.parentNode( this.Reference );
@@ -37,12 +49,20 @@ classdef(Abstract) Node < ...
             nodes = this.Engine.childNodes( this.Reference );
         end
         
+        function decision = isSameNode( this, otherNode )
+            validateattributes( this, ...
+                {'fx.html.behavior.Node'}, {'scalar'} )
+            validateattributes( otherNode, ...
+                {'fx.html.behavior.Node'}, {'scalar'} )
+            decision = this.Engine.isSameNode( this.Reference, otherNode.Reference );
+        end
+        
     end
     
     methods( Sealed )
         
-        function varargout = eq( varargin )
-            [varargout{1:nargout}] = eq@fx.html.behavior.WithEngine( varargin{:} );
+        function decision = eq( this, otherNode )
+            decision = this.isSameNode( otherNode );
         end
         
     end

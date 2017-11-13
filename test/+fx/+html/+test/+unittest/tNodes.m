@@ -29,11 +29,19 @@ classdef tNodes < fx.html.test.WithEngine
         
         function testBasicTree( this )
             document = this.Engine.document();
-            children = document.childNodes().childNodes();
-            this.verifyNumElements( children, 2 );
+            children = document.getElementsByTagName( 'html' ).childNodes();
+            this.verifyNumElements( children, 3 );
             this.verifyEqual( children(1).Name, 'HEAD' );
-            this.verifyEqual( children(2).Name, 'BODY' );
+            this.verifyEqual( children(3).Name, 'BODY' );
             this.verifyEqual( children(1).parentNode().Name, 'HTML' );
+            this.verifyTrue( children(1).parentNode() == children(3).parentNode() );
+        end
+        
+        function testText( this )
+            document = this.Engine.document();
+            text = document.getElementById( 'hardstuff' ).childNodes();
+            this.verifyNumElements( text, 1 );
+            this.verifyEqual( text.Value, 'Difficult %^& with "char" <all over> the place' )
         end
         
     end
