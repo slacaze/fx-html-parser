@@ -42,9 +42,10 @@ classdef Engine < handle
         
         function this = Engine( url )
             if nargin < 1
-                url = fullfile( htmlroot, 'templates', 'empty.html' );
+                url = 'about:blank';
             end
             this.Browser = matlab.internal.webwindow( url );
+            this.waitForReadyState();
         end
         
         function delete( this )
@@ -165,6 +166,18 @@ classdef Engine < handle
     end
     
     methods( Access = private )
+        
+        function waitForReadyState( this )
+            ready = false;
+            while ~ready
+                try
+                    document = this.document(); %#ok<NASGU>
+                    ready = true;
+                catch
+                    pause( 0.01 );
+                end
+            end
+        end
         
         function varargout = js( this, varargin )
             try

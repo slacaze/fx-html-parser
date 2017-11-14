@@ -9,7 +9,6 @@ classdef WithEngine < matlab.unittest.TestCase
         function instanciateEngine( this )
             this.Engine = fx.html.Engine( fullfile( ...
                 htmltestroot, 'Sample', 'sample.html' ) );
-            pause( 1 )
         end
         
     end
